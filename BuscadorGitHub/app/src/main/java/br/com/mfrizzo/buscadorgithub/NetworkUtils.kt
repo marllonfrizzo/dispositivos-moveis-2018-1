@@ -31,7 +31,7 @@ class NetworkUtils {
             return null
         }
 
-        fun obterRespostaDaUrlHtpp(url: URL): String? {
+        fun obterRespostaDaUrlHttp(url: URL): String? {
             val urlConnection = url.openConnection() as HttpURLConnection
             var inputStream : InputStream? = null
             try {
