@@ -26,20 +26,41 @@
         android:text="A URL será exibida aqui"
         android:textSize="22sp"
         />
-    
-    <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp">
-        
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:id="@+id/pb_aguarde"
+            android:layout_gravity="center"
+            android:visibility="invisible"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/tv_github_resultado"
-            android:text="Faça uma busca"
-            android:textSize="18sp"/>
+            android:id="@+id/tv_mensagem_erro"
+            android:gravity="center"
+            android:textSize="22sp"
+            android:text="@string/mensagem_erro"
+            android:padding="16dp"
+            android:visibility="invisible"/>
 
-    </ScrollView>
-    
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_github_resultado"
+                android:text="Faça uma busca"
+                android:textSize="18sp"/>
+
+        </ScrollView>
+    </FrameLayout>
 
 </LinearLayout>

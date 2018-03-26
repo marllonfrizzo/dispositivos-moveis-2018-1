@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import br.grupointegrado.tads.buscadorgithub.NetworkUtils
 import kotlinx.android.synthetic.main.activity_main.*
@@ -44,8 +45,29 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun exibirResultado() {
+        tv_github_resultado.visibility = View.VISIBLE;
+        tv_mensagem_erro.visibility = View.INVISIBLE;
+        pb_aguarde.visibility = View.INVISIBLE;
+    }
+
+    fun exibirMensagemErro() {
+        tv_mensagem_erro.visibility = View.VISIBLE;
+        tv_github_resultado.visibility = View.INVISIBLE;
+        pb_aguarde.visibility = View.INVISIBLE;
+    }
+
+    fun exibirProgressBar() {
+        pb_aguarde.visibility = View.VISIBLE;
+        tv_github_resultado.visibility = View.INVISIBLE;
+        tv_mensagem_erro.visibility = View.INVISIBLE;
+    }
+
     inner class GithubBuscaTask : AsyncTask<URL, Void, String>() {
 
+        override fun onPreExecute() {
+            exibirProgressBar();
+        }
 
         override fun doInBackground(vararg p0: URL): String? {
             try {
@@ -60,7 +82,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onPostExecute(result: String?) {
-            tv_github_resultado.text = result
+            if (result != null && !result.isEmpty()) {
+                tv_github_resultado.text = result
+                exibirResultado()
+            } else {
+                exibirMensagemErro()
+            }
+
         }
     }
 }
