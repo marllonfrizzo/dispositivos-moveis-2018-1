@@ -2,7 +2,9 @@ package com.example.marllonfrizzo.clima
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
+import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,8 +27,35 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        for (clima in dadosClimaFicticios) {
+        exJson()
+
+        /* for (clima in dadosClimaFicticios) {
             dados_clima.append("$clima \n\n\n")
-        }
+        } */
+    }
+
+    fun exJson() {
+        var dadosJson =
+                """
+            {
+              "temperatura": {
+                "minima": 11.34,
+                "maxima": 19.01
+              },
+              "clima": {
+                "id": 801,
+                "condicao": "Nuvens",
+                "descricao": "poucas nuvens"
+              },
+              "pressao": 1023.51,
+              "umidade": 87
+            }
+                """
+
+
+        val objJson = JSONObject(dadosJson)
+        val clima = objJson.getJSONObject("clima")
+        val condicao = clima.getString("condicao")
+        Log.d("exJson", "A condicao e $condicao")
     }
 }
