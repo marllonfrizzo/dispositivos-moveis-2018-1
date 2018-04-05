@@ -5,6 +5,10 @@
 
     <string name="amanha">Amanhã</string>
 
+    <string name="acao_atualizar">Atualizar</string>
+
+    <string name="mensagem_erro">Não foi possível obter os dados do clima, tente novamente.</string>
+
     <string name="formata_data_completa">
         <xliff:g id="mes">%1$s</xliff:g>, <xliff:g id="dia">%2$s</xliff:g>
     </string>

@@ -18,6 +18,24 @@
             android:padding="16dp"
             android:textSize="20sp"
             />
+
     </ScrollView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_mensagem_erro"
+        android:gravity="center"
+        android:textSize="22sp"
+        android:text="@string/mensagem_erro"
+        android:padding="16dp"
+        android:visibility="invisible" />
+
+    <ProgressBar
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:id="@+id/pb_aguarde"
+        android:layout_gravity="center"
+        android:visibility="invisible" />
 
 </FrameLayout>
