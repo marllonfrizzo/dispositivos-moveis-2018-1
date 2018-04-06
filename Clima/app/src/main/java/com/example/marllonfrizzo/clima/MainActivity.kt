@@ -3,6 +3,7 @@ package com.example.marllonfrizzo.clima
 import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -12,7 +13,6 @@ import com.example.marllonfrizzo.clima.dados.ClimaPreferencias
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
 import java.net.URL
-import java.text.DateFormat
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -92,10 +92,10 @@ class MainActivity : AppCompatActivity() {
                     var weatherDescription = ""
                     val result = list.getJSONObject(i)
                     val dt = result.getString("dt")
-                    val dataHoraMilissegundos: Long = dt.toLong()
+                    val dataHoraMilissegundos: Long = dt.toLong()*1000
                     val dataHora = Date(dataHoraMilissegundos)
-                    //val dataHoraFormatada = DateFormat.format("dd/MM/yyyy HH:mm", dataHora)
-                    dados_clima.append("Data: $dataHora\n")
+                    val dataHoraFormatada = DateFormat.format("dd/MM/yyyy HH:mm", dataHora)
+                    dados_clima.append("Data: $dataHoraFormatada\n")
 
                     val main = result.getJSONObject("main")
                     val temp = main.getString("temp")
