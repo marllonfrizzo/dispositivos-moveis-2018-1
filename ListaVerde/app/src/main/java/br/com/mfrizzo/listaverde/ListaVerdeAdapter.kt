@@ -3,7 +3,6 @@ package br.com.mfrizzo.listaverde
 import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -12,6 +11,7 @@ class ListaVerdeAdapter : RecyclerView.Adapter<ListaVerdeAdapter.NumeroViewHolde
 
     val lista: List<Int>
     val context: Context
+    var viewHolderCount = 0
 
     constructor(context: Context, list: List<Int>) {
         this.lista = list
@@ -22,6 +22,11 @@ class ListaVerdeAdapter : RecyclerView.Adapter<ListaVerdeAdapter.NumeroViewHolde
         val numeroListItem = LayoutInflater.from(context)
                 .inflate(R.layout.numero_list_item, parent, false)
         val numeroViewHolder = NumeroViewHolder(numeroListItem)
+        val tvViewHolderIndex = numeroListItem.findViewById<TextView>(R.id.tv_viewholder_index)
+        tvViewHolderIndex.text = "ViewHolder $viewHolderCount"
+        val cor = ColorUtils.getViewHolderBackgroundColor(context, viewHolderCount)
+        numeroListItem.setBackgroundColor(cor)
+        viewHolderCount++
         return numeroViewHolder
     }
 
@@ -33,9 +38,6 @@ class ListaVerdeAdapter : RecyclerView.Adapter<ListaVerdeAdapter.NumeroViewHolde
         val numero = lista.get(position)
 
         holder.tvItemNumero?.text = numero.toString()
-
-        val cor = ColorUtils.getViewHolderBackgroundColor(context, position)
-        holder.tvItemNumero?.setBackgroundColor(cor)
     }
 
     inner class NumeroViewHolder : RecyclerView.ViewHolder {
