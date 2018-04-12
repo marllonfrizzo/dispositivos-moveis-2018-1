@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity(), MetasPessoaisAdapter.ItemClickListener
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         if (item?.itemId == R.id.action_adicionar) {
-            if (et_data.text.toString() == "" || et_titulo.text.toString() == "" || et_descricao.text.toString() == "Não concluída") {
+            if (et_data.text.toString() == "" || et_titulo.text.toString() == "" || et_descricao.text.toString() == "") {
                 Toast.makeText(this, "Digite os dados!", Toast.LENGTH_SHORT).show();
             } else {
                 addItem()
