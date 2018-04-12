@@ -2,6 +2,7 @@ package br.com.mfrizzo.metaspessoais
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
+import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +22,6 @@ class MetasPessoaisAdapter : RecyclerView.Adapter<MetasPessoaisAdapter.ViewHolde
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val listItem = LayoutInflater.from(contexto)
-                //.inflate(R.layout.item, parent, false)
                 .inflate(R.layout.list_items, parent, false)
         val viewHolder = ViewHolder(listItem)
         return viewHolder
@@ -34,10 +34,10 @@ class MetasPessoaisAdapter : RecyclerView.Adapter<MetasPessoaisAdapter.ViewHolde
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = lista.get(position)
 
-        //holder.tvItem?.append("Título: ${item.titulo}\nDescrição: ${item.descricao}\nData Limite: ${item.dataLimite}")
         holder.textViewHead?.text = item.titulo
         holder.textViewDesc?.text = item.descricao
-        holder.textViewDate?.text = item.dataLimite
+        holder.textViewDate?.text = DateFormat.format("dd/MM/yyyy", item.dataLimite)
+        holder.textViewConcluida?.text = item.concluido
     }
 
     interface ItemClickListener {
@@ -46,16 +46,16 @@ class MetasPessoaisAdapter : RecyclerView.Adapter<MetasPessoaisAdapter.ViewHolde
     }
 
     inner class ViewHolder : RecyclerView.ViewHolder, View.OnClickListener, View.OnLongClickListener {
-        //val tvItem: TextView?
         val textViewHead: TextView?
         val textViewDesc: TextView?
         val textViewDate: TextView?
+        val textViewConcluida: TextView?
 
         constructor(itemView: View?) : super(itemView) {
-            //tvItem = itemView?.findViewById<TextView>(R.id.tv_item)
             textViewHead = itemView?.findViewById(R.id.textViewHead)
             textViewDesc = itemView?.findViewById(R.id.textViewDesc)
             textViewDate = itemView?.findViewById(R.id.textViewDate)
+            textViewConcluida = itemView?.findViewById(R.id.tv_estado)
 
             itemView?.setOnClickListener(this)
             itemView?.setOnLongClickListener(this)

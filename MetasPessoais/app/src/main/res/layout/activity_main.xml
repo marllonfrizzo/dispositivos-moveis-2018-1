@@ -71,4 +71,12 @@
         android:layout_marginTop="200dp"
         android:text="excluir"/>
 
+    <Button
+        android:id="@+id/bt_concluida"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="210dp"
+        android:layout_marginTop="200dp"
+        android:text="concluida"/>
+
 </FrameLayout>
