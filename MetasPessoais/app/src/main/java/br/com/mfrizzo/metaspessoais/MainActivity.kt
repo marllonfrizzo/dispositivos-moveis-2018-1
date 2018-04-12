@@ -115,12 +115,7 @@ class MainActivity : AppCompatActivity(), MetasPessoaisAdapter.ItemClickListener
         val data = dataHandler(dataLimite.toString())
 
         val diffDays = diff(data)
-
-        if (diffDays > 0) {
-            listaMetas.add(meta(titulo.toString(), desc.toString(), data, estadoHandler(diffDays, false)))
-        } else {
-            listaMetas.add(meta(titulo.toString(), desc.toString(), data, estadoHandler(diffDays, false)))
-        }
+        listaMetas.add(meta(titulo.toString(), desc.toString(), data, estadoHandler(diffDays, false)))
 
         preencher()
         limpar()
