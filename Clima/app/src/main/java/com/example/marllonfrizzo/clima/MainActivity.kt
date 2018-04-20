@@ -1,55 +1,70 @@
 package com.example.marllonfrizzo.clima
 
+import android.content.Context
 import android.os.AsyncTask
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.text.format.DateFormat
-import android.util.Log
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import com.example.marllonfrizzo.clima.util.NetworkUtils
 import com.example.marllonfrizzo.clima.dados.ClimaPreferencias
+import com.example.marllonfrizzo.clima.util.JsonUtils
+import com.example.marllonfrizzo.clima.util.NetworkUtils
 import kotlinx.android.synthetic.main.activity_main.*
-import org.json.JSONObject
 import java.net.URL
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
+
+    var previsaoAdapter: PrevisaoAdapter? = null
+    val context: Context = this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
+        previsaoAdapter = PrevisaoAdapter(null)
+        val layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+
+        rv_clima.layoutManager = layoutManager
+        rv_clima.adapter = previsaoAdapter
+
+        /* val layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        val adapter = ListaVerdeAdapter(this, numeros, this)
+
+        rv_lista_numerica.layoutManager = layoutManager
+        rv_lista_numerica.adapter = adapter */
         carregarDadosClima()
     }
 
     fun exibirResultados() {
-        dados_clima.visibility = View.VISIBLE
+        rv_clima.visibility = View.VISIBLE
         tv_mensagem_erro.visibility = View.INVISIBLE
         pb_aguarde.visibility = View.INVISIBLE
     }
 
     fun exibirMensagemErro() {
         tv_mensagem_erro.visibility = View.VISIBLE
-        dados_clima.visibility = View.INVISIBLE
+        rv_clima.visibility = View.INVISIBLE
         pb_aguarde.visibility = View.INVISIBLE
     }
 
     fun exibirProgressBar() {
         pb_aguarde.visibility = View.VISIBLE
-        dados_clima.visibility = View.INVISIBLE
+        rv_clima.visibility = View.INVISIBLE
         tv_mensagem_erro.visibility = View.INVISIBLE
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.clima, menu)
+
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         if (item?.itemId == R.id.acao_atualizar) {
-            dados_clima.text = ""
+            //dados_clima.text = ""
             carregarDadosClima()
             return true
         }
@@ -83,35 +98,8 @@ class MainActivity : AppCompatActivity() {
 
         override fun onPostExecute(result: String?) {
             if (result != null) {
-                dados_clima.text = ""
-
-                val json = JSONObject(result)
-                val list = json.getJSONArray("list")
-
-                for (i in 0 until list.length()) {
-                    var weatherDescription = ""
-                    val result = list.getJSONObject(i)
-                    val dt = result.getString("dt")
-                    val dataHoraMilissegundos: Long = dt.toLong()*1000
-                    val dataHora = Date(dataHoraMilissegundos)
-                    val dataHoraFormatada = DateFormat.format("dd/MM/yyyy HH:mm", dataHora)
-                    dados_clima.append("Data: $dataHoraFormatada\n")
-
-                    val main = result.getJSONObject("main")
-                    val temp = main.getString("temp")
-                    val umidade = main.getString("humidity")
-                    dados_clima.append("Temperatura: $temp°C\n")
-                    dados_clima.append("Umidade: $umidade\n")
-
-                    dados_clima.append("Descrição:")
-                    val weather = result.getJSONArray("weather")
-                    for (j in 0 until weather.length()) {
-                        val x = weather.getJSONObject(j)
-                        weatherDescription = x.getString("description")
-                        dados_clima.append(" $weatherDescription")
-                    }
-                    dados_clima.append("\n\n\n")
-                }
+                val retorno = JsonUtils.getSimplesStringsDeClimaDoJson(context, result)
+                previsaoAdapter?.setDadosDoClima(retorno)
 
                 exibirResultados()
             } else {

@@ -6,20 +6,12 @@
     android:layout_height="match_parent"
     tools:context="com.example.marllonfrizzo.clima.MainActivity">
 
-    <ScrollView
+    <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/rv_clima">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:id="@+id/dados_clima"
-            android:padding="16dp"
-            android:textSize="20sp"
-            />
-
-    </ScrollView>
+    </android.support.v7.widget.RecyclerView>
 
     <TextView
         android:layout_width="wrap_content"
