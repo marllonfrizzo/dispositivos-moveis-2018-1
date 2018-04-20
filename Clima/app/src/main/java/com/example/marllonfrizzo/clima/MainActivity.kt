@@ -1,6 +1,5 @@
 package com.example.marllonfrizzo.clima
 
-import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -17,12 +16,10 @@ import java.net.URL
 class MainActivity : AppCompatActivity() {
 
     var previsaoAdapter: PrevisaoAdapter? = null
-    val context: Context = this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
 
         previsaoAdapter = PrevisaoAdapter(null)
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -30,11 +27,6 @@ class MainActivity : AppCompatActivity() {
         rv_clima.layoutManager = layoutManager
         rv_clima.adapter = previsaoAdapter
 
-        /* val layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        val adapter = ListaVerdeAdapter(this, numeros, this)
-
-        rv_lista_numerica.layoutManager = layoutManager
-        rv_lista_numerica.adapter = adapter */
         carregarDadosClima()
     }
 
@@ -64,7 +56,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         if (item?.itemId == R.id.acao_atualizar) {
-            //dados_clima.text = ""
             carregarDadosClima()
             return true
         }
@@ -98,8 +89,8 @@ class MainActivity : AppCompatActivity() {
 
         override fun onPostExecute(result: String?) {
             if (result != null) {
-                val retorno = JsonUtils.getSimplesStringsDeClimaDoJson(context, result)
-                previsaoAdapter?.setDadosDoClima(retorno)
+                val retorno = JsonUtils.getSimplesStringsDeClimaDoJson(applicationContext, result)
+                previsaoAdapter?.setDadosClima(retorno)
 
                 exibirResultados()
             } else {

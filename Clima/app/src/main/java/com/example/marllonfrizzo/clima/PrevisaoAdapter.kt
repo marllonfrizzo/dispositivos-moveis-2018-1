@@ -7,7 +7,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 
 class PrevisaoAdapter : RecyclerView.Adapter<PrevisaoAdapter.PrevisaoViewHolder> {
-    var dadosClima: Array<String?>?
+
+    private var dadosClima: Array<String?>?
 
     constructor(dadosClima: Array<String?>?) {
         this.dadosClima = dadosClima
@@ -35,7 +36,7 @@ class PrevisaoAdapter : RecyclerView.Adapter<PrevisaoAdapter.PrevisaoViewHolder>
         }
     }
 
-    fun setDadosDoClima(dados: Array<String?>?) {
+    fun setDadosClima(dados: Array<String?>?) {
         dadosClima = dados
         notifyDataSetChanged()
     }
