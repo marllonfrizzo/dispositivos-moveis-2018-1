@@ -1,4 +1,4 @@
-package br.grupointegrado.tads.buscadorgithub
+package br.com.mfrizzo.buscadorgithub
 
 import android.net.Uri
 import java.io.IOException

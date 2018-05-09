@@ -1,22 +1,60 @@
 package br.com.mfrizzo.buscadorgithub
 
-import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import android.support.v4.app.LoaderManager
+import android.support.v4.content.AsyncTaskLoader
+import android.support.v4.content.Loader
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
-import br.grupointegrado.tads.buscadorgithub.NetworkUtils
 import kotlinx.android.synthetic.main.activity_main.*
+import org.json.JSONObject
 import java.net.URL
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<String> {
+
+    companion object {
+        val URL_BUSCA = "URL_BUSCA"
+        val BUSCA_GITHUB_LOADER_ID = 1000
+    }
+
+    var cacheResultado : String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        et_busca.addTextChangedListener(object : TextWatcher{
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                cacheResultado = null
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                // Nada
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+                // Nada
+            }
+        })
+
+        supportLoaderManager.initLoader(BUSCA_GITHUB_LOADER_ID, null, this)
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey("CONTEUDO_TEXTVIEW")) {
+                val conteudoTextView = savedInstanceState.getString("CONTEUDO_TEXTVIEW")
+                tv_url.text = conteudoTextView
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        val conteudoTextView = tv_url.text.toString()
+        outState?.putString("CONTEUDO_TEXTVIEW", conteudoTextView)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -26,8 +64,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         if (item?.itemId == R.id.action_buscar) {
-            //Log.d("MainActivity", "Clicou!")
-            //Toast.makeText(this, "Clicou", Toast.LENGTH_LONG).show()
             buscarNoGithub()
             return true
         }
@@ -36,12 +72,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun buscarNoGithub() {
-        var url = NetworkUtils.construirUrl(et_busca.text.toString())
+        val url = NetworkUtils.construirUrl(et_busca.text.toString())
         tv_url.text = url.toString()
         if (url != null) {
-            //tv_github_resultado.text = NetworkUtils.obterRespostaDaUrlHttp(url)
-            val task = GithubBuscaTask()
-            task.execute(url)
+            val parametros = Bundle()
+            parametros.putString(URL_BUSCA, url.toString())
+            supportLoaderManager.restartLoader(BUSCA_GITHUB_LOADER_ID, parametros, this)
+
         }
     }
 
@@ -63,32 +100,68 @@ class MainActivity : AppCompatActivity() {
         tv_mensagem_erro.visibility = View.INVISIBLE;
     }
 
-    inner class GithubBuscaTask : AsyncTask<URL, Void, String>() {
+    override fun onCreateLoader(id: Int, parametros: Bundle?): Loader<String> {
+        val loader = object : AsyncTaskLoader<String>(this) {
 
-        override fun onPreExecute() {
-            exibirProgressBar();
-        }
-
-        override fun doInBackground(vararg p0: URL): String? {
-            try {
-                val url = p0[0]
-                val result = NetworkUtils.obterRespostaDaUrlHttp(url!!)
-
-                return result
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-            }
-            return null
-        }
-
-        override fun onPostExecute(result: String?) {
-            if (result != null && !result.isEmpty()) {
-                tv_github_resultado.text = result
-                exibirResultado()
-            } else {
-                exibirMensagemErro()
+            override fun onStartLoading() {
+                super.onStartLoading()
+                if (parametros == null) {
+                    return
+                }
+                exibirProgressBar()
+                if (cacheResultado != null) {
+                    deliverResult(cacheResultado)
+                } else {
+                    forceLoad()
+                }
             }
 
+            override fun loadInBackground(): String? {
+                try {
+                    var urlBusca = parametros!!.getString(URL_BUSCA)
+                    val url = URL(urlBusca)
+                    val result = NetworkUtils.obterRespostaDaUrlHttp(url)
+
+                    return result
+                } catch (ex: Exception) {
+                    ex.printStackTrace()
+                }
+                return null
+            }
+
+            override fun deliverResult(resultado: String?) {
+                super.deliverResult(resultado)
+                cacheResultado = resultado
+            }
+
+        }
+
+        return loader
+    }
+
+    override fun onLoadFinished(loader: Loader<String>?, result: String?) {
+
+        if (result != null) {
+            tv_github_resultado.text = ""
+
+            val json = JSONObject(result)
+            val items = json.getJSONArray("items")
+
+            for (i in 0 until items.length()) {
+                val repository = items.getJSONObject(i)
+                val name = repository.getString("name")
+
+                tv_github_resultado.append("$name \n\n\n")
+            }
+
+            exibirResultado()
+        } else {
+            exibirMensagemErro()
         }
     }
+
+    override fun onLoaderReset(loader: Loader<String>?) {
+        // Nada por enquanto
+    }
+
 }
