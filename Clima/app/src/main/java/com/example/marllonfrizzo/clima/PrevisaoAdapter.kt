@@ -9,9 +9,11 @@ import android.widget.TextView
 class PrevisaoAdapter : RecyclerView.Adapter<PrevisaoAdapter.PrevisaoViewHolder> {
 
     private var dadosClima: Array<String?>?
+    private var itemClickListener: PrevisaoItemClickListener
 
-    constructor(dadosClima: Array<String?>?) {
+    constructor(dadosClima: Array<String?>?, itemClickListener: PrevisaoItemClickListener) {
         this.dadosClima = dadosClima
+        this.itemClickListener = itemClickListener;
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): PrevisaoViewHolder {
@@ -41,11 +43,23 @@ class PrevisaoAdapter : RecyclerView.Adapter<PrevisaoAdapter.PrevisaoViewHolder>
         notifyDataSetChanged()
     }
 
-    inner class PrevisaoViewHolder : RecyclerView.ViewHolder {
-        val tvDadosPrevisao : TextView?
+    fun getDadosClima() : Array<String?>? {
+        return dadosClima
+    }
 
-        constructor(itemView: View?) : super(itemView) {
-            tvDadosPrevisao = itemView?.findViewById<TextView>(R.id.tv_dados_previsao)
+    interface PrevisaoItemClickListener {
+        fun onItemClick(index: Int)
+    }
+
+    inner class PrevisaoViewHolder : RecyclerView.ViewHolder {
+        val tvDadosPrevisao: TextView
+
+        constructor(itemView: View) : super(itemView) {
+            tvDadosPrevisao = itemView.findViewById(R.id.tv_dados_previsao)
+
+            itemView.setOnClickListener({
+                itemClickListener.onItemClick(adapterPosition)
+            })
         }
     }
 

@@ -32,6 +32,9 @@
     <string name="formata_vento_mph">
         <xliff:g id="velocidade">%1$1.0f</xliff:g> mph <xliff:g id="direcao">%2$s</xliff:g>
     </string>
+    
+    <string name="acao_compartilhar">Compartilhar</string>
+    <string name="acao_mapa">Mapa</string>
 
     <string name="condicao_2xx">Tempestade</string>
     <string name="condicao_3xx">Garoa</string>

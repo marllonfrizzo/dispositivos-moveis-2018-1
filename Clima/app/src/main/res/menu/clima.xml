@@ -4,6 +4,13 @@
 
     <item
         android:id="@+id/acao_atualizar"
+        android:orderInCategory="1"
         app:showAsAction="ifRoom"
         android:title="@string/acao_atualizar" />
+
+    <item
+        android:id="@+id/acao_mapa"
+        android:orderInCategory="2"
+        android:title="@string/acao_mapa"
+        app:showAsAction="never" />
 </menu>
