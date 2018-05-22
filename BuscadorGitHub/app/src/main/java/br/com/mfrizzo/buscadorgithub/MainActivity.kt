@@ -1,11 +1,14 @@
 package br.com.mfrizzo.buscadorgithub
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.LoaderManager
 import android.support.v4.content.AsyncTaskLoader
+import android.support.v4.content.ContextCompat
 import android.support.v4.content.Loader
+import android.support.v7.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Menu
@@ -15,7 +18,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
 import java.net.URL
 
-class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<String> {
+class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<String>, SharedPreferences.OnSharedPreferenceChangeListener {
 
     companion object {
         val URL_BUSCA = "URL_BUSCA"
@@ -49,6 +52,46 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<String> 
                 val conteudoTextView = savedInstanceState.getString("CONTEUDO_TEXTVIEW")
                 tv_url.text = conteudoTextView
             }
+        }
+
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
+        val exibirUrl = sharedPreferences.getBoolean(getString(R.string.pref_exibir_url),
+                resources.getBoolean(R.bool.pref_exibir_url_padrao))
+        val corFundo = sharedPreferences.getString(getString(R.string.pref_cor_fundo), getString(R.string.pref_cor_fundo_padrao))
+        val backgroundColor = selecionaCorDeFundo(corFundo)
+        window.decorView.setBackgroundColor(backgroundColor)
+
+        if (!exibirUrl) {
+            tv_url.visibility = View.INVISIBLE
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+        if (key == getString(R.string.pref_exibir_url)) {
+            val exibit_url = sharedPreferences.getBoolean(key, resources.getBoolean(R.bool.pref_exibir_url_padrao))
+            tv_url.visibility = if (exibit_url) View.VISIBLE else View.GONE
+        } else if (key == getString(R.string.pref_cor_fundo)) {
+            val corFundo = sharedPreferences.getString(getString(R.string.pref_cor_fundo), getString(R.string.pref_cor_fundo_padrao))
+            val backgroundColor = selecionaCorDeFundo(corFundo)
+            window.decorView.setBackgroundColor(backgroundColor)
+        }
+    }
+
+    fun selecionaCorDeFundo(corFundo: String): Int {
+        return when (corFundo) {
+            getString(R.string.pref_cor_fundo_branco_valor) -> ContextCompat.getColor(this, R.color.fundoBranco)
+            getString(R.string.pref_cor_fundo_verde_valor) -> ContextCompat.getColor(this, R.color.fundoVerde)
+            getString(R.string.pref_cor_fundo_azul_valor) -> ContextCompat.getColor(this, R.color.fundoAzul)
+            else -> ContextCompat.getColor(this, R.color.fundoBranco)
         }
     }
 
