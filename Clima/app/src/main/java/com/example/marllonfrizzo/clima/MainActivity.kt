@@ -1,12 +1,14 @@
 package com.example.marllonfrizzo.clima
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.LoaderManager
 import android.support.v4.content.AsyncTaskLoader
 import android.support.v4.content.Loader
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.preference.PreferenceManager
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
@@ -16,13 +18,16 @@ import com.example.marllonfrizzo.clima.util.JsonUtils
 import com.example.marllonfrizzo.clima.util.NetworkUtils
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), PrevisaoAdapter.PrevisaoItemClickListener, LoaderManager.LoaderCallbacks<Array<String?>?> {
+class MainActivity : AppCompatActivity(),
+        PrevisaoAdapter.PrevisaoItemClickListener,
+        LoaderManager.LoaderCallbacks<Array<String?>?>,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     var previsaoAdapter: PrevisaoAdapter? = null
 
     companion object {
         val DADOS_PREVISAO_LOADER = 1000
-        val LOCALIZACAO_EXTRA = "LOCALIZACAO_EXTRA"
+        var PREFERENCIAS_FORAM_ALTERADAS = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +41,29 @@ class MainActivity : AppCompatActivity(), PrevisaoAdapter.PrevisaoItemClickListe
         rv_clima.adapter = previsaoAdapter
 
         supportLoaderManager.initLoader(DADOS_PREVISAO_LOADER, null, this)
+
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onSharedPreferenceChanged(p0: SharedPreferences?, key: String?) {
+        PREFERENCIAS_FORAM_ALTERADAS = true
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        if (PREFERENCIAS_FORAM_ALTERADAS) {
+            supportLoaderManager.restartLoader(DADOS_PREVISAO_LOADER, null, this)
+            PREFERENCIAS_FORAM_ALTERADAS = false
+        }
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Array<String?>?> {
@@ -101,7 +129,7 @@ class MainActivity : AppCompatActivity(), PrevisaoAdapter.PrevisaoItemClickListe
     }
 
     fun abrirMapa() {
-        val addressString = "Campo Mourão, Paraná, Brasil"
+        val addressString = ClimaPreferencias.getLocalizacaoSalva(this)
         val uriGeo = Uri.parse("geo:0,0?q=$addressString")
 
         val intentMapa = Intent(Intent.ACTION_VIEW)
@@ -145,7 +173,16 @@ class MainActivity : AppCompatActivity(), PrevisaoAdapter.PrevisaoItemClickListe
             abrirMapa()
             return true
         }
+        if (item?.itemId === R.id.acao_configuracao) {
+            abrirConfiguracao()
+            return true
+        }
         return super.onOptionsItemSelected(item)
+    }
+
+    fun abrirConfiguracao() {
+        val intent = Intent(this, ConfiguracaoActivity::class.java)
+        startActivity(intent)
     }
 
 }
