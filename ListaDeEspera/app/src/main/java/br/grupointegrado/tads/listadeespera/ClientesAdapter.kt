@@ -1,6 +1,7 @@
 package br.grupointegrado.tads.listadeespera
 
 import android.database.Cursor
+import android.provider.BaseColumns
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -32,6 +33,8 @@ class ClientesAdapter : RecyclerView.Adapter<ClientesAdapter.ClienteViewHolder> 
             return
         }
 
+        val id = cursor.getLong(cursor.getColumnIndex(BaseColumns._ID))
+
         val colunaNome = cursor.getColumnIndex(ListaEsperaContrato.Clientes.COLUNA_NOME)
         val nome = cursor.getString(colunaNome)
 
@@ -40,6 +43,7 @@ class ClientesAdapter : RecyclerView.Adapter<ClientesAdapter.ClienteViewHolder> 
 
         holder.tvNome.text = nome
         holder.tvTamanhoGrupo.text = tamanhoGrupo.toString()
+        holder.itemView.tag = id
     }
 
     override fun getItemCount(): Int {
