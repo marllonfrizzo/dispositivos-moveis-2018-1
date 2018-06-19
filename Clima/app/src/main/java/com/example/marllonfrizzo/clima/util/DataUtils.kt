@@ -117,6 +117,14 @@ class DataUtils {
             return (date + gmtOffset) / DIA_EM_MILISSEGUNDOS
         }
 
+        fun dataEstaNormalizada(milisegundos: Long): Boolean {
+            var isDateNormalized = false
+            if (milisegundos % DIA_EM_MILISSEGUNDOS == 0L) {
+                isDateNormalized = true
+            }
+            return isDateNormalized
+        }
+
     }
 
 }

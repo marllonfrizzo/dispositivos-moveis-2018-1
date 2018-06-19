@@ -1,8 +1,14 @@
 package com.example.marllonfrizzo.clima
 
+import android.net.Uri
 import android.provider.BaseColumns
 
 object ClimaContrato {
+
+    val AUTORIDADE = "com.example.marllonfrizzo.clima.dados.ClimaContentProvider"
+    val URI_BASE = Uri.parse("content://$AUTORIDADE")
+    val URI_CLIMA = "clima"
+
     internal object Clima : BaseColumns {
         const val TABELA = "clima"
         const val COLUNA_DATA_HORA = "data_hora"
