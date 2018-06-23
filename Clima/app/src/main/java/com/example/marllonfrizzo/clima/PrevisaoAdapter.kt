@@ -1,18 +1,22 @@
 package com.example.marllonfrizzo.clima
 
+import android.database.Cursor
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.example.marllonfrizzo.clima.dados.ClimaContrato
+import com.example.marllonfrizzo.clima.util.ClimaUtils
+import com.example.marllonfrizzo.clima.util.DataUtils
 
 class PrevisaoAdapter : RecyclerView.Adapter<PrevisaoAdapter.PrevisaoViewHolder> {
 
-    private var dadosClima: Array<String?>?
+    private var cursor: Cursor?
     private var itemClickListener: PrevisaoItemClickListener
 
-    constructor(dadosClima: Array<String?>?, itemClickListener: PrevisaoItemClickListener) {
-        this.dadosClima = dadosClima
+    constructor(cursor: Cursor?, itemClickListener: PrevisaoItemClickListener) {
+        this.cursor = cursor
         this.itemClickListener = itemClickListener;
     }
 
@@ -24,31 +28,50 @@ class PrevisaoAdapter : RecyclerView.Adapter<PrevisaoAdapter.PrevisaoViewHolder>
         return previsaoViewHolder
     }
 
-    override fun onBindViewHolder(holder: PrevisaoViewHolder?, position: Int) {
-        val posicao = dadosClima?.get(position)
+    override fun onBindViewHolder(holder: PrevisaoViewHolder, position: Int) {
+        val c = cursor
+        if (c == null) {
+            return
+        }
 
-        holder?.tvDadosPrevisao?.text = posicao.toString()
+        if (!c.moveToPosition(position)) {
+            return
+        }
+
+        val context = holder.itemView.context
+        val Clima = ClimaContrato.Clima;
+
+        val dateInMillis = c.getLong(c.getColumnIndex(Clima.COLUNA_DATA_HORA))
+        val dateString = DataUtils.getDataAmigavelEmString(context, dateInMillis, false)
+
+        val weatherId = c.getInt(c.getColumnIndex(Clima.COLUNA_CLIMA_ID))
+        val description = ClimaUtils.getStringCondicoesDoClima(context, weatherId)
+
+        val highInCelsius = c.getDouble(c.getColumnIndex(Clima.COLUNA_MAX_TEMP))
+        val lowInCelsius = c.getDouble(c.getColumnIndex(Clima.COLUNA_MIN_TEMP))
+        val highAndLowTemperature = ClimaUtils.formataMaxMin(context, highInCelsius, lowInCelsius)
+
+        val weatherSummary = "$dateString - $description - $highAndLowTemperature"
+
+        holder.tvDadosPrevisao.text = weatherSummary
     }
 
     override fun getItemCount(): Int {
-        if (dadosClima == null) {
-            return  0
-        } else {
-            return  dadosClima!!.size
+        val c = cursor
+        if (c != null) {
+            return  c.count
         }
+        return 0
     }
 
-    fun setDadosClima(dados: Array<String?>?) {
-        dadosClima = dados
+    fun atualizarCursor(cursor: Cursor?) {
+        this.cursor?.close()
+        this.cursor = cursor
         notifyDataSetChanged()
     }
 
-    fun getDadosClima() : Array<String?>? {
-        return dadosClima
-    }
-
     interface PrevisaoItemClickListener {
-        fun onItemClick(index: Int)
+        fun onItemClick(dataHora: Long)
     }
 
     inner class PrevisaoViewHolder : RecyclerView.ViewHolder {
@@ -58,7 +81,9 @@ class PrevisaoAdapter : RecyclerView.Adapter<PrevisaoAdapter.PrevisaoViewHolder>
             tvDadosPrevisao = itemView.findViewById(R.id.tv_dados_previsao)
 
             itemView.setOnClickListener({
-                itemClickListener.onItemClick(adapterPosition)
+                cursor!!.moveToPosition(adapterPosition)
+                val dateInMillis = cursor!!.getLong(cursor!!.getColumnIndex(ClimaContrato.Clima.COLUNA_DATA_HORA))
+                itemClickListener.onItemClick(dateInMillis)
             })
         }
     }
