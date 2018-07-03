@@ -35,10 +35,7 @@
             android:authorities="@string/autoridade"
             android:name=".dados.ClimaContentProvider"
             android:exported="false" />
-        
-        <service
-            android:name=".sync.ClimaIntentService"
-            android:exported="false" />
+
 
     </application>
 

@@ -5,6 +5,9 @@ import android.content.ContentValues
 import android.content.UriMatcher
 import android.database.Cursor
 import android.net.Uri
+import com.example.marllonfrizzo.clima.ClimaBdHelper
+import com.example.marllonfrizzo.clima.ClimaContrato
+import com.example.marllonfrizzo.clima.util.DataUtils
 import java.lang.UnsupportedOperationException
 
 class ClimaContentProvider : ContentProvider() {
@@ -58,7 +61,7 @@ class ClimaContentProvider : ContentProvider() {
             CODE_CLIMA_POR_DATA -> {
                 val dataClima = uri.lastPathSegment
                 val where = "${ClimaContrato.Clima.COLUNA_DATA_HORA} = ?"
-                val whereArgs = arrayOf(dataClima.toString())
+                var whereArgs = arrayOf(dataClima.toString())
                 cursor = bd.query(
                         ClimaContrato.Clima.TABELA,
                         null,
@@ -85,9 +88,14 @@ class ClimaContentProvider : ContentProvider() {
                 bd.beginTransaction()
                 try {
                     for (value in values) {
-                        val _id = bd.insert(ClimaContrato.Clima.TABELA, null, value)
-                        if (_id != -1L) {
-                            registrosInseridos++
+                        val dataClima = value.getAsLong(ClimaContrato.Clima.COLUNA_DATA_HORA)
+                        if (!DataUtils.dataEstaNormalizada(dataClima)) {
+                            throw IllegalAccessException("A data deve estar normalizada!")
+                        } else {
+                            val _id = bd.insert(ClimaContrato.Clima.TABELA, null, value)
+                            if (_id != -1L) {
+                                registrosInseridos++
+                            }
                         }
                     }
                     bd.setTransactionSuccessful()

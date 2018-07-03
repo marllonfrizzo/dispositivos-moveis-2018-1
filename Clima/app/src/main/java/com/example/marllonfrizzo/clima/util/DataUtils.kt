@@ -6,7 +6,6 @@ import com.example.marllonfrizzo.clima.R
 //import br.grupointegrado.tads.clima.R
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 class DataUtils {
 
@@ -100,6 +99,15 @@ class DataUtils {
         }
 
         /**
+         * Para facilitar a busca por uma data exata, nós normalizamos todas as datas que
+         * serão armazenadas para o início do dia em UTC.
+         *
+         */
+        fun normalizarData(date: Long): Long {
+            return date / DIA_EM_MILISSEGUNDOS * DIA_EM_MILISSEGUNDOS
+        }
+
+        /**
          * Retorna o número do dia desde January 01, 1970, 12:00 Midnight UTC)
          *
          */
@@ -109,13 +117,12 @@ class DataUtils {
             return (date + gmtOffset) / DIA_EM_MILISSEGUNDOS
         }
 
-        fun getDataNormalizadaHoje(): Long {
-            val utcNowMillis = System.currentTimeMillis()
-            val currentTimeZone = TimeZone.getDefault()
-            val gmtOffsetMillis = currentTimeZone.getOffset(utcNowMillis).toLong()
-            val timeSinceEpochLocalTimeMillis = utcNowMillis + gmtOffsetMillis
-            val daysSinceEpochLocal = TimeUnit.MILLISECONDS.toDays(timeSinceEpochLocalTimeMillis)
-            return TimeUnit.DAYS.toMillis(daysSinceEpochLocal)
+        fun dataEstaNormalizada(milisegundos: Long): Boolean {
+            var isDateNormalized = false
+            if (milisegundos % DIA_EM_MILISSEGUNDOS == 0L) {
+                isDateNormalized = true
+            }
+            return isDateNormalized
         }
 
     }
